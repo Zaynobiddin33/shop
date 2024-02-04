@@ -16,5 +16,13 @@ urlpatterns = [
     path('logout,', views.logout_user, name='logout'),
 
     path('create-cart/<int:id>/', views.create_cart, name = 'create_cart'),
-    path('add-to-cart/<int:id_product>/<int:id_user>', views.add_to_cart, name='add_to_cart')
+    path('add-to-cart/<int:id_product>/<int:id_user>', views.add_to_cart, name='add_to_cart'),
+    #wishlist
+    path('wishlist', views.wishlist, name='wishlist'),
+    path('add_wish/<int:id>', views.add_wish, name = 'add_wish'),
+    path('delete-wish/<int:id>', views.delete_wish, name = 'delete_wish'),
+
+    path('settings', views.user_update, name = 'user_update'),
+    path('order/<int:id>', views.order_cart, name = 'order')
+
 ]

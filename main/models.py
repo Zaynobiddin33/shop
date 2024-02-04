@@ -33,7 +33,9 @@ class Product(models.Model):
     @property
     def review(self):
         reviews = ProductReview.objects.filter(product_id=self.id)
-        result = reduce(lambda result, x: result +x, reviews, 0)
+        result = 0
+        for i in reviews:
+            result += i.mark
         try:
             result = result / reviews.count()
         except ZeroDivisionError:
@@ -99,3 +101,4 @@ class CartProduct(models.Model):
         else:
             result = self.product.price * self.quantity
         return result
+    

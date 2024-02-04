@@ -1,8 +1,10 @@
+from django.contrib import messages
 from django.shortcuts import render, redirect
 from . import models
 from django.db.models import Q
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required 
+from django.contrib.auth import update_session_auth_hash
 
 
 def index(request):
@@ -17,7 +19,8 @@ def index(request):
         products.filter(category_id=category_id)
     context = {
         'products':products,
-        'categorys':categorys
+        'categorys':categorys,
+        'wished': models.WishList.objects.all()
     }
     return render(request, 'index.html', context)
 
@@ -39,6 +42,10 @@ def product_detail(request, id):
     recomendation = models.Product.objects.filter(
         category_id=product.category.id).exclude(id=product.id)[:3]
     images = models.ProductImage.objects.filter(product_id=product.id)
+    if models.WishList.objects.filter(product = product):
+        is_wished = True
+    else:
+        is_wished = False
 
 
     context = {
@@ -46,8 +53,22 @@ def product_detail(request, id):
         'categorys':categorys,
         'recomendation':recomendation,
         'images':images,
-        'range':range(product.review)
+        'is_wished': is_wished
     }
+    if request.method == 'POST':
+        user = request.user
+        mark = request.POST['rate']
+        product = models.Product.objects.get(id = request.POST['product_id'])
+        if models.ProductReview.objects.filter(user = user, product = product).first():
+            data =  models.ProductReview.objects.get(user = user, product = product)
+            data.mark = mark
+            data.save()
+        else:
+            models.ProductReview.objects.create(
+                product = product,
+                user = user,
+                mark = mark
+            )
     return render(request, 'product/detail.html', context)
 
 
@@ -56,7 +77,8 @@ def carts(request):
     in_active = models.Cart.objects.filter(is_active=False, user=request.user)
     context = {
         'active':active,
-        'in_active':in_active
+        'in_active':in_active,
+        'categorys': models.Category.objects.all(),
     }
     return render(request, 'cart/carts.html', context)
 
@@ -118,20 +140,20 @@ def logout_user(request):
 @login_required(login_url='main:login')
 def create_cart(request, id):           #agar foydalanuvchida Cart bo'lmasa yoki u aktiv bo'lmasa yangi Cart yaratadi
     product = models.Product.objects.get(id = id)
-    if models.Cart.objects.filter(user = request.user, is_active = True):
+    if models.Cart.objects.filter(user = request.user, is_active = True).first():
         return redirect('main:add_to_cart', id_product = product.id, id_user = request.user.id)
     else:
         models.Cart.objects.create(
             user = request.user
         )
-        return redirect ('main:add_to_cart', id_product = product.id, id_user = request.user)
+        return redirect ('main:add_to_cart', id_product = product.id, id_user = request.user.id)
 
 def add_to_cart(request, id_product, id_user):
     product = models.Product.objects.get(id = id_product)
     cart = models.Cart.objects.get(user_id = id_user, is_active = True)
     previous_url = request.META.get('HTTP_REFERER')
-    if models.CartProduct.objects.filter(product_id= id_product):
-        data = models.CartProduct.objects.get(product_id = id_product)
+    if models.CartProduct.objects.filter(product_id = id_product, card = cart).first():
+        data = models.CartProduct.objects.get(product_id = id_product, card = cart)
         data.quantity +=1
         data.save()
         return redirect(previous_url)
@@ -141,5 +163,71 @@ def add_to_cart(request, id_product, id_user):
             card = cart,
             )
         return redirect(previous_url)
+    
+def wishlist(request):
+    items = models.WishList.objects.filter(user = request.user)
+    context = {
+        'items': items,
+        'categorys': models.Category.objects.all()
+    }
+    return render(request, 'wish/list.html', context)
 
+def add_wish(request,id):
+    if not request.user.is_authenticated:
+        return redirect ('main:login')
+    previous_url = request.META.get('HTTP_REFERER')
+    product = models.Product.objects.get(id = id)
+    models.WishList.objects.create(
+        product = product,
+        user = request.user
+    )
+    return redirect (previous_url)
+
+def delete_wish(request, id):
+    if request.META.get('HTTP_REFERER').startswith('http://127.0.0.1:8000/product'):
+        product = models.Product.objects.get(id = id)
+        models.WishList.objects.get(product = product).delete()
+    else:
+        models.WishList.objects.get(id = id).delete()
+
+    previous_url = request.META.get('HTTP_REFERER')
+    return redirect(previous_url)
+
+
+def user_update(request):
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            new_username = request.POST.get('username')
+            new_password = request.POST.get('password')
+
+            if models.User.objects.filter(username=new_username).exclude(pk=request.user.pk).exists():
+                messages.error(request, 'Username is already taken.')
+            else:
+                user = request.user
+                user.username = new_username
+                user.set_password(new_password)
+                user.save()
+                update_session_auth_hash(request, user)
+                return redirect('main:index')
+    
+    return render(request, 'user/update.html')
+
+def order_cart(request, id):
+    cart = models.Cart.objects.get(id=id)
+    objects = models.CartProduct.objects.filter(card = cart)
+    for obj in objects:
+        prod = models.Product.objects.get(id = obj.product.id)
+        new_quant = obj.product.quantity-obj.quantity
+        if new_quant>=0:
+            prod.quantity = new_quant
+            prod.save()
+        else:
+            obj.product.quantity = prod.quantity
+            prod.quantity = 0
+            obj.save()
+            prod.save()
+
+    cart.is_active = False
+    cart.save()
+    return redirect('main:carts')
 
