@@ -7,9 +7,9 @@
 			<div class="product-top">
 				<div class="product-one">
 					{% for product in products %}
-					<div class="col-md-3 product-left" >
-						<div class="product-main simpleCart_shelfItem" style="border-radius: 20px;">
-							<a href="{% url 'main:product_detail' product.id %}" class="mask"><img class="img-responsive zoom-img" src="{{product.baner_image.url}}" alt="" /></a>
+					<div class="col-md-3 product-left" style="display: flex; justify-content: center;" >
+						<div class="product-main simpleCart_shelfItem" style="border-radius: 20px; margin-bottom: 2vw; overflow: hidden; ">
+							<a href="{% url 'main:product_detail' product.id %}" class="mask"><div class="img-responsive zoom-img" style="background-image: url({{product.baner_image.url}}); width: 20vw; height:15vw; background-size: cover; background-position: center;"></div>
 							<div class="product-bottom">
 								<h3>{{product.name}}</h3>
 								{%for i in wishlist%}

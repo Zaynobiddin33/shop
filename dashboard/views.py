@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from main.models import *
+from PIL import Image
 
 
 def dashboard(request):
