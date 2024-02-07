@@ -134,3 +134,42 @@ def image_delete(request, id):
     ProductImage.objects.get(id = id).delete()
     previous_url = request.META.get('HTTP_REFERER')
     return redirect(previous_url )
+
+
+def add_admin(request):
+    users = User.objects.all()
+    context = {'users':users}
+    if request.method == "POST":
+        if User.objects.filter(username = request.POST['user']).first():
+            username = request.POST['user']
+            new_admin = User.objects.get(username = username)
+            new_admin.is_staff = True
+            new_admin.save()
+    return render(request, 'dashboard/user/add.html', context)
+
+def admins(request):
+    admins = User.objects.filter(is_staff = True)
+    return render(request, 'dashboard/user/list.html', {'admins': admins})
+
+def delete_admin(request, id):
+    User.objects.get(id = id).delete()
+    return redirect('dashboard:admins')
+
+def income(request):
+    products = Product.objects.all()
+
+    if request.method == "POST":
+        product = Product.objects.get(id = request.POST['product_id'])
+        quantity= request.POST['quantity']
+        ProductIncome.objects.create(
+            product = product,
+            amount = quantity
+        )
+        product.quantity+=int(request.POST['quantity'])
+        product.save()
+        return redirect ('dashboard:dash')
+    return render(request, 'dashboard/income/add.html', {"products": products})
+
+def income_list(request):
+    objs = ProductIncome.objects.all().order_by('-date')
+    return render(request, 'dashboard/income/list.html', {"objs":objs})

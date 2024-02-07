@@ -101,4 +101,9 @@ class CartProduct(models.Model):
         else:
             result = self.product.price * self.quantity
         return result
-    
+
+
+class ProductIncome(models.Model):
+    product = models.ForeignKey(Product, on_delete = models.CASCADE)
+    amount = models.IntegerField()
+    date = models.DateTimeField(auto_now_add = True)
