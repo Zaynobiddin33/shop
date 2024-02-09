@@ -2,6 +2,10 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
 from main.models import *
 from PIL import Image
+from openpyxl import Workbook
+from django.http import HttpResponse
+from io import BytesIO
+
 
 
 def dashboard(request):
@@ -89,6 +93,9 @@ def product_create(request):
             baner_image=baner_image,
             category_id=category_id
         )
+        Overall.objects.create(
+            product = product
+        )
         for image in images:
             ProductImage.objects.create(
                 image=image,
@@ -156,6 +163,7 @@ def delete_admin(request, id):
     User.objects.get(id = id).delete()
     return redirect('dashboard:admins')
 
+#creating income
 def income(request):
     products = Product.objects.all()
 
@@ -164,13 +172,100 @@ def income(request):
         quantity= request.POST['quantity']
         ProductIncome.objects.create(
             product = product,
-            amount = quantity
+            amount = int(quantity)
         )
         product.quantity+=int(request.POST['quantity'])
         product.save()
         return redirect ('dashboard:dash')
     return render(request, 'dashboard/income/add.html', {"products": products})
 
-def income_list(request):
+def list_income(request):
+    incomes = ProductIncome.objects.all().order_by('-date')
+    context = {'enters':incomes}
+    return render(request, 'dashboard/income/list.html', context)
+
+def delete_income(request, id):
+    ProductIncome.objects.get(id=id).delete()
+    return redirect('dashboard:list_enter')
+
+def update_income(request, id):
+    if request.method == 'POST':
+        quantity = int(request.POST['quantity'])
+        income = ProductIncome.objects.get(id=id)
+        income.amount = quantity
+        income.save()
+    return redirect('dashboard:list_enter')
+
+#Excel generator
+def income_excel(request):
     objs = ProductIncome.objects.all().order_by('-date')
-    return render(request, 'dashboard/income/list.html', {"objs":objs})
+    wb = Workbook()
+    wsh = wb.active
+    headers = ['No','Product name', 'Product amount', 'Added date']
+    wsh.append(headers)
+
+    for i, obj in enumerate(objs):
+        row_data = [i+1, obj.product.name, obj.amount, str(obj.date)[:10]]
+        wsh.append(row_data)
+
+    for col in wsh.columns:
+        max_length = 0
+        column = col[0].column_letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        changed_width = (max_length + 2) * 1.2
+        wsh.column_dimensions[column].width = changed_width
+
+    buffer = BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+    response = HttpResponse(
+        buffer.getvalue(),
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="incomes.xlsx"'
+    return response
+
+#excel for 'kirim va chiqimlar' page
+def overall_excel(request):
+    objs = Overall.objects.all().order_by('-id')
+    wb = Workbook()
+    wsh = wb.active
+    headers = ['No','Product name', 'Income', 'Outcome']
+    wsh.append(headers)
+
+    for i, obj in enumerate(objs):
+        row_data = [i+1,obj.product.name, obj.all_income, obj.all_outcome]
+        wsh.append(row_data)
+
+    for col in wsh.columns:
+        max_length = 0
+        column = col[0].column_letter
+        for cell in col:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        changed_width = (max_length + 2) * 1.2
+        wsh.column_dimensions[column].width = changed_width
+
+    buffer = BytesIO()
+    wb.save(buffer)
+    buffer.seek(0)
+    response = HttpResponse(
+        buffer.getvalue(),
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="incomes.xlsx"'
+    return response
+
+
+def income_outcome(request):
+    data = Overall.objects.all()
+    context = {'data': data}
+    return render (request, 'dashboard/income/income_outcome.html', context)

@@ -24,7 +24,12 @@ urlpatterns = [
     path('delete-admin/<int:id>', views.delete_admin, name='delete_admin'),
 
     path('income',views.income, name='income'),
-    path('income-list', views.income_list, name = 'income_list')
+    path('income-list', views.list_income, name = 'list_enter'),
+    path('enter-update/<int:id>/', views.update_income, name='update_enter'),
+    path('enter-delete/<int:id>/', views.delete_income, name='delete_enter'),
+    path('income-excel', views.income_excel, name='excel'),
+    path('overall', views.income_outcome, name = 'overall'),
+    path('overall-excel', views.overall_excel, name='overall_excel'),
 
 
 ]

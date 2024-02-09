@@ -10,7 +10,7 @@
 
                 <!-- PAGE-HEADER -->
                 <div class="page-header">
-                    <h1 class="page-title">Maxsulot yaratish</h1>
+                    <h1 class="page-title">Maxsulot</h1>
                 </div>
                 <!-- PAGE-HEADER END -->
                 
@@ -20,26 +20,22 @@
                     <div class="col-xl-6 col-lg-12">
                         <div class="card">
                             <div class="card-header">
-                                <h3 class="card-title">Maxsulot yaratish</h3>
+                                <h3 class="card-title">Maxsulotga kirim qilish</h3>
                             </div>
                             <form method='post' enctype="multipart/form-data"> 
                                 {% csrf_token %} 
                             <div class="card-body pb-2">
                                 <div class="row row-sm">
                                     <div class="form-group">
-                                        <label>mahsulotni tanlang</label>
+                                        <label>Maxsulotlar</label>
                                         <select class="form-control select2" name="product_id">
-                                            {% for product in products %}
-                                            <option value="{{product.id}}">{{product.name}}</option>
-                                            {% endfor %}
-                                        </select>
-                                        <br>
-                                       <label>Kirim qilinuvchi miqdor</label>
-                                        <input class="form-control  mb-4" placeholder="" required type="number" name="quantity">
-                                        </select>
-                                        
-                                        
-                                    </div>
+                                        {% for product in products %}
+                                        <option value="{{product.id}}">{{product.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                        <label>Miqdor</label>
+                                        <input class="form-control mb-4" required type="number" name="quantity">
+                                        </div>
                                 </div>
                                 
                                 <div class="row">

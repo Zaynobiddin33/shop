@@ -90,7 +90,7 @@ class Cart(models.Model):
 
 
 class CartProduct(models.Model):
-    card = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    card = models.ForeignKey(Cart, on_delete=models.CASCADE, unique = True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
     
@@ -107,3 +107,30 @@ class ProductIncome(models.Model):
     product = models.ForeignKey(Product, on_delete = models.CASCADE)
     amount = models.IntegerField()
     date = models.DateTimeField(auto_now_add = True)
+
+    def save(self, *args, **kwargs):
+        self.product_name = self.product.name
+        if self.pk:
+            enter = ProductIncome.objects.get(pk=self.pk)
+            product = enter.product # None/Product
+            product.quantity -= enter.amount
+            product.quantity += self.amount
+            product.save()
+        else:
+            self.product.quantity += self.amount
+            self.product.save()
+        super(ProductIncome, self).save(*args, **kwargs)
+
+
+class Overall(models.Model):
+    product = models.ForeignKey(Product, on_delete = models.CASCADE)
+    all_outcome = models.IntegerField(default = 0)
+
+    @property
+    def all_income(self):
+        income = 0
+        objs = ProductIncome.objects.filter(product = self.product)
+        for obj in objs:
+            income += obj.amount
+        return income
+    

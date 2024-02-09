@@ -74,7 +74,7 @@ def product_detail(request, id):
 
 def carts(request):
     active = models.Cart.objects.filter(is_active=True, user=request.user)
-    in_active = models.Cart.objects.filter(is_active=False, user=request.user)
+    in_active = models.Cart.objects.filter(is_active=False, user=request.user).order_by('-id')
     context = {
         'active':active,
         'in_active':in_active,
@@ -218,16 +218,24 @@ def order_cart(request, id):
     for obj in objects:
         prod = models.Product.objects.get(id = obj.product.id)
         new_quant = obj.product.quantity-obj.quantity
+
         if new_quant>=0:
             prod.quantity = new_quant
             prod.save()
+            data = models.Overall.objects.get(product = obj.product)
+            data.all_outcome +=obj.quantity
+            data.save()
         else:
-            obj.product.quantity = prod.quantity
+            obj.quantity = prod.quantity
             prod.quantity = 0
             obj.save()
             prod.save()
+            data = models.Overall.objects.get(product = obj.product)
+            data.all_outcome += obj.quantity
+            data.save()
 
     cart.is_active = False
     cart.save()
     return redirect('main:carts')
+
 
