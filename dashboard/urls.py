@@ -30,6 +30,8 @@ urlpatterns = [
     path('income-excel', views.income_excel, name='excel'),
     path('overall', views.income_outcome, name = 'overall'),
     path('overall-excel', views.overall_excel, name='overall_excel'),
+    path("input-excel", views.excel_input, name='excel_input'),
+    path('detail/<int:id>', views.product_detail , name = 'detail')
 
 
 ]

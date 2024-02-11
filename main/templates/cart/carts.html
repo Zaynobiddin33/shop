@@ -14,15 +14,18 @@
 			<div class="in-check" >
 				<ul class="unit">
 					<li><span>Maxsulotlar soni</span></li>
-					<li><span>Maxsulotlar narxi</span></li>		
+					<li><span>Maxsulotlar narxi</span></li>
+					<li><span>Batafsil Savatni ko'rish</span></li>
+
 					<div class="clearfix"></div>
 				</ul>
                 {% for cart in active %}
 				<ul class="cart-header">
-					<a href="{%url 'main:cart_detail' cart.id%}">
+					
 						<li><span class="name">{{cart.quantity}}</span></li>
 						<li><span class="cost">{{cart.total_price}}</span></li>
-					</a>
+						<li><span class="cost"><a href="{%url 'main:cart_detail' cart.id%}"><Button class="btn btn-primary">Savatni ko'rish</Button></a></span></li>
+					
 					<div class="clearfix"> </div>
 				</ul>
                 {% endfor %}

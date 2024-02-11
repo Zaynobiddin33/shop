@@ -1,0 +1,180 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+{% block content %}
+<!--app-content open-->
+       <div class="main-content app-content mt-0" style="position: relative; top: -148px;">
+        <div class="side-app">
+
+            <!-- CONTAINER -->
+            <div class="main-container container-fluid">
+
+                <!-- PAGE-HEADER -->
+                <div class="page-header">
+                    <h1 class="page-title">Maxsulot</h1>
+                </div>
+                <!-- PAGE-HEADER END -->
+                
+                <!-- Row -->
+                <div class="row">
+                    <div class="col-xl-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row row-sm">
+                                    <div class="col-xl-5 col-lg-12 col-md-12">
+                                        <div class="row">
+                                            <div class="col-xl-12">
+                                                <div class="product-carousel">
+                                                    <div id="Slider" class="carousel slide border" data-bs-ride="false">
+                                                        <div class="carousel-inner">
+                                                            <div class="carousel-item active"><img src="{{product.baner_image.url}}" alt="img" class="img-fluid mx-auto d-block">
+                                                                <div class="text-center mt-5 mb-5 btn-list">
+                                                                </div>
+                                                            </div>
+                                                            
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="clearfix carousel-slider">
+                                                    <div id="thumbcarousel" class="carousel slide" data-bs-interval="t">
+                                                        <div class="carousel-inner">
+                                                            <ul class="carousel-item active">
+                                                                {%for image in images%}
+                                                                <li data-bs-target="#Sliderq" data-bs-slide-to="{{forloop.counter}}" class="thumb active m-2"><img src="{{image.image.url}}" alt="img"></li>
+                                                                {%endfor%}
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="details col-xl-7 col-lg-12 col-md-12 mt-4 mt-xl-0">
+                                        <div class="mt-2 mb-4">
+                                            <h3 class="mb-3 fw-semibold">{{product.name}}</h3>
+                                            <h4 class="mt-4"><b> Description</b></h4>
+                                            <p>{{product.description}}</p>
+                                            {%if product.currency == 1%}
+                                            <h3 class="mb-4"><span class="me-2 fw-bold fs-25 d-inline-flex">${{product.price}} USD</h3>
+                                            {%else%}
+                                            <h3 class="mb-4"><span class="me-2 fw-bold fs-25 d-inline-flex">{{product.price}} SO'M</h3>
+                                            {%endif%}
+                                            
+                                            <div class="row row-sm">
+                                                <div class="col">
+
+                                                </div>
+                                            </div>
+                                            <hr>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- End Row -->
+                <div class="page-header">
+                    <h1 class="page-title">Mahsulotning kirim va chiqim tarixi</h1>
+                </div>
+                <div class="card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Ro'yxat</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="table-responsive">
+                                            <table class="table border text-nowrap text-md-nowrap mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Qiymati</th>
+                                                        <th>Sanasi</th>
+                                                        <th>Turi</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {%for item in all%}
+                                                    {%if item.type == 2%}
+                                                    <tr class="table-secondary">
+                                                        <td>{{item.amount}}</td>
+                                                        <td>{{item.date}}</td>
+                                                        <td>Chiqim</td>
+                                                    </tr>
+                                                    {%else%}
+                                                    <tr class="table-success">
+                                                        <td>{{item.amount}}</td>
+                                                        <td>{{item.date}}</td>
+                                                        <td>Kirim</td>
+                                                    </tr>
+                                                    {%endif%}
+                                                    {%endfor%}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+            </div>
+            <!-- CONTAINER CLOSED -->
+
+        </div>
+    </div>
+    <!--app-content close-->
+    {% endblock %}
+
+
+{% block js %}
+<!-- FILE UPLOADES JS -->
+   <script src="{% static 'dashboard/plugins/fileuploads/js/fileupload.js' %}"></script>
+   <script src="{% static 'dashboard/plugins/fileuploads/js/file-upload.js' %}"></script>
+
+   <!-- INTERNAL File-Uploads Js-->
+   <script src="{% static 'dashboard/plugins/fancyuploder/jquery.ui.widget.js' %}"></script>
+   <script src="{% static 'dashboard/plugins/fancyuploder/jquery.fileupload.js' %}"></script>
+   <script src="{% static 'dashboard/plugins/fancyuploder/jquery.iframe-transport.js' %}"></script>
+   <script src="{% static 'dashboard/plugins/fancyuploder/jquery.fancy-fileupload.js' %}"></script>
+   <script src="{% static 'dashboard/plugins/fancyuploder/fancy-uploader.js' %}"></script>
+
+       <!-- JQUERY JS -->
+       <script src="{%static 'dashboard/js/jquery.min.js'%}"></script>
+
+       <!-- BOOTSTRAP JS -->
+       <script src="{%static 'dashboard/plugins/bootstrap/js/popper.min.js'%}"></script>
+       <script src="{%static 'dashboard/plugins/bootstrap/js/bootstrap.min.js'%}"></script>
+   
+       <!-- INPUT MASK JS -->
+       <script src="{%static 'dashboard/plugins/input-mask/jquery.mask.min.js'%}"></script>
+   
+       <!-- TypeHead js -->
+       <script src="{%static 'dashboard/plugins/bootstrap5-typehead/autocomplete.js'%}"></script>
+       <script src="{%static 'dashboard/js/typehead.js"></script>
+   
+       <!-- INTERNAL SELECT2 JS -->
+       <script src="{%static 'dashboard/plugins/select2/select2.full.min.js'%}"></script>
+       <script src="{%static 'dashboard/js/select2.js'%}"></script>
+   
+       <!-- Perfect SCROLLBAR JS-->
+       <script src="{%static 'dashboard/plugins/p-scroll/perfect-scrollbar.js'%}"></script>
+       <script src="{%static 'dashboard/plugins/p-scroll/pscroll.js'%}"></script>
+       <script src="{%static 'dashboard/plugins/p-scroll/pscroll-1.js'%}"></script>
+   
+       <!-- SIDE-MENU JS -->
+       <script src="{%static 'dashboard/plugins/sidemenu/sidemenu.js'%}"></script>
+   
+       <!-- SIDEBAR JS -->
+       <script src="{%static 'dashboard/plugins/sidebar/sidebar.js'%}"></script>
+   
+       <!-- Color Theme js -->
+       <script src="{%static 'dashboard/js/themeColors.js'%}"></script>
+   
+       <!-- Sticky js -->
+       <script src="{%static 'dashboard/js/sticky.js'%}"></script>
+   
+       <!-- CUSTOM JS -->
+       <script src="{%static 'dashboard/js/custom.js'%}"></script>
+   
+       <!-- Custom-switcher -->
+       <script src="{%static 'dashboard/js/custom-swicher.js'%}"></script>
+   
+       <!-- Switcher js -->
+       <script src="{%static 'dashboard/switcher/js/switcher.js'%}"></script>
+{% endblock %}

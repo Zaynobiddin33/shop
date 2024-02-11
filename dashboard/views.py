@@ -5,7 +5,9 @@ from PIL import Image
 from openpyxl import Workbook
 from django.http import HttpResponse
 from io import BytesIO
-
+from openpyxl import load_workbook
+from datetime import datetime
+from string import ascii_letters
 
 
 def dashboard(request):
@@ -67,7 +69,16 @@ def category_create(request):
 
 def products(request):
     products = Product.objects.all()
-    return render(request, 'dashboard/products/list.html',{'products':products})
+    category = Category.objects.all()
+    name = request.GET.get('name')
+    category_id = request.GET.get('category')
+    name = request.GET.get('name')
+    currency = request.GET.get('currency')
+    price = request.GET.get('price')
+    if name:
+        products = Product.objects.filter(name = name, price = price, category_id = category_id, currency = currency)
+
+    return render(request, 'dashboard/products/list.html',{'products':products, 'categories':category})
 
 
 def product_create(request):
@@ -176,7 +187,7 @@ def income(request):
         )
         product.quantity+=int(request.POST['quantity'])
         product.save()
-        return redirect ('dashboard:dash')
+        return redirect ('dashboard:income')
     return render(request, 'dashboard/income/add.html', {"products": products})
 
 def list_income(request):
@@ -205,7 +216,7 @@ def income_excel(request):
     wsh.append(headers)
 
     for i, obj in enumerate(objs):
-        row_data = [i+1, obj.product.name, obj.amount, str(obj.date)[:10]]
+        row_data = [i+1, obj.product.name, obj.amount, str(obj.date)]
         wsh.append(row_data)
 
     for col in wsh.columns:
@@ -269,3 +280,30 @@ def income_outcome(request):
     data = Overall.objects.all()
     context = {'data': data}
     return render (request, 'dashboard/income/income_outcome.html', context)
+
+def excel_input(request):
+    if request.method == "POST":
+        file = request.FILES['file']
+        workbook = load_workbook(file)
+        ws = workbook.active
+        for row in ws.iter_rows(values_only=True):
+            if str(row[1])!='None' and str(row[2])!='None' and str(row[3])!='None' and row[3][0] not in ascii_letters:
+                product = Product.objects.filter(name = row[1]).first()
+                date = datetime.strptime(row[3], "%Y-%m-%d %H:%M:%S.%f%z")
+                if product:
+                    ProductIncome.objects.create(
+                        product = product,
+                        amount = int(row[2]),
+                        date = date
+                    )
+    return render (request, 'dashboard/excel/input.html')
+
+def product_detail(request, id):
+    product = Product.objects.get(id = id)
+    images = ProductImage.objects.filter(product_id = id)
+    all = Product_income_outcome.objects.filter(product = product).order_by("-date")
+    context = {'product': product,
+               'images': images,
+               'all': all}
+    
+    return render (request, 'dashboard/detail/detail.html', context)

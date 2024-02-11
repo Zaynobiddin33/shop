@@ -90,7 +90,7 @@ class Cart(models.Model):
 
 
 class CartProduct(models.Model):
-    card = models.ForeignKey(Cart, on_delete=models.CASCADE, unique = True)
+    card = models.ForeignKey(Cart, on_delete=models.CASCADE,)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
     
@@ -116,10 +116,26 @@ class ProductIncome(models.Model):
             product.quantity -= enter.amount
             product.quantity += self.amount
             product.save()
+            inc = Product_income_outcome.objects.get(type = 1, id = enter.id)
+            inc.amount = self.amount
+            inc.save()
+            super(ProductIncome, self).save(*args, **kwargs)
         else:
+            super(ProductIncome, self).save(*args, **kwargs)
             self.product.quantity += self.amount
             self.product.save()
-        super(ProductIncome, self).save(*args, **kwargs)
+            Product_income_outcome.objects.create(
+                product = self.product,
+                amount = self.amount,
+                foreign_id = self.id,
+                type = 1
+            )
+    def delete(self, *args, **kwargs):
+        Product_income_outcome.objects.get(foreign_id = self.pk, type = 1).delete()
+        print('hi')
+        print('hi2')
+        super(ProductIncome, self).delete(*args, **kwargs)
+    
 
 
 class Overall(models.Model):
@@ -133,4 +149,27 @@ class Overall(models.Model):
         for obj in objs:
             income += obj.amount
         return income
+
+class ProductOut(models.Model):
+    product = models.ForeignKey(Product, on_delete = models.CASCADE)
+    amount = models.IntegerField()
+    date = models.DateTimeField(auto_now_add = True)
+
+    def save(self, *args, **kwargs):
+        super(ProductOut, self).save(*args, **kwargs)
+        Product_income_outcome.objects.create(
+                product = self.product,
+                amount = self.amount,
+                foreign_id = self.id,
+                type = 2
+            )
+        
+
+
+class Product_income_outcome(models.Model):
+    product = models.ForeignKey(Product, on_delete = models.CASCADE)
+    amount = models.IntegerField()
+    date = models.DateTimeField(auto_now_add = True)
+    foreign_id = models.SmallIntegerField()
+    type  = models.SmallIntegerField()
     

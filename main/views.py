@@ -225,6 +225,10 @@ def order_cart(request, id):
             data = models.Overall.objects.get(product = obj.product)
             data.all_outcome +=obj.quantity
             data.save()
+            models.ProductOut.objects.create(
+                product = prod,
+                amount = obj.quantity
+            )
         else:
             obj.quantity = prod.quantity
             prod.quantity = 0
@@ -233,6 +237,10 @@ def order_cart(request, id):
             data = models.Overall.objects.get(product = obj.product)
             data.all_outcome += obj.quantity
             data.save()
+            models.ProductOut.objects.create(
+                product = prod,
+                amount = obj.quantity
+            )
 
     cart.is_active = False
     cart.save()
