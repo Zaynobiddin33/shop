@@ -8,6 +8,9 @@ from io import BytesIO
 from openpyxl import load_workbook
 from datetime import datetime
 from string import ascii_letters
+from .funcs import search, page_generate
+from django.core.paginator import Paginator
+from django.core.exceptions import FieldError
 
 
 def dashboard(request):
@@ -30,6 +33,9 @@ def dashboard(request):
 
 def category_list(request):
     categories = Category.objects.all()
+    p = Paginator(categories, 3)
+    page = request.GET.get('page')
+    categories = p.get_page(page)
     return render(request, 'dashboard/category/list.html', {'categories':categories})
 
 
@@ -67,18 +73,18 @@ def category_create(request):
 
 # products
 
-def products(request):
-    products = Product.objects.all()
-    category = Category.objects.all()
-    name = request.GET.get('name')
-    category_id = request.GET.get('category')
-    name = request.GET.get('name')
-    currency = request.GET.get('currency')
-    price = request.GET.get('price')
-    if name:
-        products = Product.objects.filter(name = name, price = price, category_id = category_id, currency = currency)
+# def products(request):
+#     products = Product.objects.all()
+#     category = Category.objects.all()
+#     name = request.GET.get('name')
+#     category_id = request.GET.get('category')
+#     name = request.GET.get('name')
+#     currency = request.GET.get('currency')
+#     price = request.GET.get('price')
+#     if name:
+#         products = Product.objects.filter(name = name, price = price, category_id = category_id, currency = currency)
 
-    return render(request, 'dashboard/products/list.html',{'products':products, 'categories':category})
+#     return render(request, 'dashboard/products/list.html',{'products':products, 'categories':category})
 
 
 def product_create(request):
@@ -192,7 +198,11 @@ def income(request):
 
 def list_income(request):
     incomes = ProductIncome.objects.all().order_by('-date')
+    p = Paginator(incomes, 10)
+    page = request.GET.get('page')
+    incomes = p.get_page(page)
     context = {'enters':incomes}
+    
     return render(request, 'dashboard/income/list.html', context)
 
 def delete_income(request, id):
@@ -278,6 +288,9 @@ def overall_excel(request):
 
 def income_outcome(request):
     data = Overall.objects.all()
+    p = Paginator(data, 10)
+    page = request.GET.get('page')
+    data = p.get_page(page)
     context = {'data': data}
     return render (request, 'dashboard/income/income_outcome.html', context)
 
@@ -302,8 +315,21 @@ def product_detail(request, id):
     product = Product.objects.get(id = id)
     images = ProductImage.objects.filter(product_id = id)
     all = Product_income_outcome.objects.filter(product = product).order_by("-date")
+    p = Paginator(all, 10)
+    page = request.GET.get('page')
+    all = p.get_page(page)
     context = {'product': product,
                'images': images,
                'all': all}
     
     return render (request, 'dashboard/detail/detail.html', context)
+
+def products(request):
+    result = search(request)
+    categories  = Category.objects.all() 
+    enters = Product.objects.filter(**result)
+    p = Paginator(enters, 10)
+    page = request.GET.get('page')
+    enters = p.get_page(page)
+    context = {'products': enters, 'categories':categories}
+    return render(request, 'dashboard/products/list.html', context)

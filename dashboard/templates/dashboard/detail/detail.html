@@ -110,6 +110,39 @@
                                                 </tbody>
                                             </table>
                                         </div>
+                                        <div class="card-body d-flex justify-content-center">
+                                
+                                            <ul class="pagination mg-b-0 page-0 ">
+                                                {%if all.has_previous%}
+                                                <li class="page-item">
+                                                    <a aria-label="Last" class="page-link" href="?page=1"><i class="fa fa-angle-double-left"></i></a>
+                                                </li>
+                                                <li class="page-item">
+                                                    <a aria-label="Next" class="page-link" href="?page={{product.previous_page_number}}"><i class="fa fa-angle-left"></i></a>
+                                                </li>
+                                                
+                                                <li class="page-item">
+                                                    <a class="page-link" href="?page={{all.previous_page_number}}">{{all.previous_page_number}}</a>
+                                                </li>
+                                                {%endif%}
+                                                <li class="page-item active">
+                                                    <a class="page-link" href="#">{{all.number}}</a>
+                                                </li>
+                                                {%if all.has_next%}
+                                                <li class="page-item">
+                                                    <a class="page-link hidden-xs-down" href="?page={{all.next_page_number}}">{{all.next_page_number}}</a>
+                                                </li>
+                                                
+                                                
+                                                <li class="page-item">
+                                                    <a aria-label="Next" class="page-link" href="?page={{all.next_page_number}}"><i class="fa fa-angle-right"></i></a>
+                                                </li>
+                                                <li class="page-item">
+                                                    <a aria-label="Last" class="page-link" href="?page={{all.paginator.num_pages}}"><i class="fa fa-angle-double-right"></i></a>
+                                                </li>
+                                                {%endif%}
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
 
