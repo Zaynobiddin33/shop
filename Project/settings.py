@@ -40,6 +40,9 @@ INSTALLED_APPS = [
     # my apps
     'main.apps.MainConfig',
     'dashboard.apps.DashboardConfig',
+    'api',
+    #3rd party
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
