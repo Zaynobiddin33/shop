@@ -1,12 +1,15 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from api import serializers
 from django.db.models import Q
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required 
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
+
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 # Create your views here.
 
 from main import models
@@ -45,41 +48,41 @@ def filtered(request, id):
     return Response(context)
 
 
-@api_view(["GET, POST"])
-def product_detail(request, id):
-    product = models.Product.objects.get(id=id)
-    categorys = models.Category.objects.all()
-    recomendation = models.Product.objects.filter(
-        category_id=product.category.id).exclude(id=product.id)[:3]
-    images = models.ProductImage.objects.filter(product_id=product.id)
-    if models.WishList.objects.filter(product = product):
-        is_wished = True
-    else:
-        is_wished = False
+# @api_view(["GET, POST"])
+# def product_detail(request, id):
+#     product = models.Product.objects.get(id=id)
+#     categorys = models.Category.objects.all()
+#     recomendation = models.Product.objects.filter(
+#         category_id=product.category.id).exclude(id=product.id)[:3]
+#     images = models.ProductImage.objects.filter(product_id=product.id)
+#     if models.WishList.objects.filter(product = product):
+#         is_wished = True
+#     else:
+#         is_wished = False
 
 
-    context = {
-        'product':serializers.ProductSerializer(product, many = True).data,
-        'categorys':serializers.CategorySerializer(categorys, many = True).data,
-        'recomendation':serializers.ProductSerializer(recomendation, many = True).data,
-        'images':serializers.ProductImageSerializer(images, many = True).data,
-        'is_wished': is_wished
-    }
-    if request.method == 'POST':
-        user = request.user
-        mark = request.data['rate']
-        product = models.Product.objects.get(id = request.data['product_id'])
-        if models.ProductReview.objects.filter(user = user, product = product).first():
-            data =  models.ProductReview.objects.get(user = user, product = product)
-            data.mark = mark
-            data.save()
-        else:
-            models.ProductReview.objects.create(
-                product = product,
-                user = user,
-                mark = mark
-            )
-    return Response(context)
+#     context = {
+#         'product':serializers.ProductSerializer(product, many = True).data,
+#         'categorys':serializers.CategorySerializer(categorys, many = True).data,
+#         'recomendation':serializers.ProductSerializer(recomendation, many = True).data,
+#         'images':serializers.ProductImageSerializer(images, many = True).data,
+#         'is_wished': is_wished
+#     }
+#     if request.method == 'POST':
+#         user = request.user
+#         mark = request.data['rate']
+#         product = models.Product.objects.get(id = request.data['product_id'])
+#         if models.ProductReview.objects.filter(user = user, product = product).first():
+#             data =  models.ProductReview.objects.get(user = user, product = product)
+#             data.mark = mark
+#             data.save()
+#         else:
+#             models.ProductReview.objects.create(
+#                 product = product,
+#                 user = user,
+#                 mark = mark
+#             )
+#     return Response(context)
 
 @api_view(["GET"])
 def carts(request):
@@ -278,3 +281,254 @@ def cart_detail_delete(request):
         return Response({'detail': 'Cart item deleted successfully'})
     except models.CartProduct.DoesNotExist:
         return Response({'error': 'Cart item not found'})
+
+
+#HOMEWORK 
+@api_view(['GET'])
+def category_list(request):
+    categories = models.Category.objects.all()
+    serializer = serializers.CategorySerializer(categories, many = True)
+    return Response(serializer.data)
+
+@api_view(["GET"])
+def category_detatil(request, id):
+    category = models.Category.objects.get(id = id)
+    products = models.Product.objects.filter(category = category)
+    cat_serializer = serializers.CategorySerializer(category)
+    product_serializer = serializers.ProductSerializer(products, many = True)
+    context = {
+        'category': cat_serializer.data ,
+        'related_products' : product_serializer.data
+    }
+    return Response (context)
+
+@api_view(["GET"])
+def product_list(request):
+    products = models.Product.objects.all()
+    serializer = serializers.ProductSerializer(products, many = True)
+    return Response(serializer.data)
+
+@api_view(["GET"])
+def product_detail(request, id):
+    product = models.Product.objects.get(id = id)
+    images = models.ProductImage.objects.filter(product_id = id)
+    prod_serializer = serializers.ProductSerializer(product)
+    image_serializer = serializers.ProductImageSerializer(images, many = True)
+    context  = {
+        'product': prod_serializer.data,
+        'related_images': image_serializer.data
+    }
+    return Response(context)
+
+@api_view(["GET"])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def wishlist_create(request, id):
+    data = models.WishList.objects.filter(user = request.user, product_id = id).first()
+    if data:
+        return Response({'report':'wish for this product was already created'})
+    else:
+        new = models.WishList.objects.create(
+            user = request.user,
+            product = models.Product.objects.get(id = id)
+        )
+        serializer = serializers.WishlistSerializer(new)
+        context = {
+            'report': 'Created successfully',
+            'wishlist': serializer.data
+        }
+        return Response(context)
+
+@api_view(["GET"])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def wishlist_delete(request, id):
+    data = models.WishList.objects.filter(user = request.user, product_id = id).first()
+    if data:
+        data.delete()
+        return Response({'report': 'deleted successfully'})
+    else:
+        return Response({'report': 'there is no wishlist to delete'})
+
+
+
+@api_view(["POST"])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def reviewing(request, id):
+
+    """ bu funksiyada review yaratilmagan bo'lsa yaratadi, mavjud bo'lsa update qiladi. Review_CREATE, review_UPDATE"""
+
+    data = models.ProductReview.objects.filter(product_id = id, user = request.user).first()
+    if not data:
+        if request.method == "POST":
+            new = models.ProductReview.objects.create(
+                user = request.user,
+                product = models.Product.objects.get(id =id),
+                mark = request.data.get('mark')
+            )
+            serializer = serializers.ProductReviewSerializer(new)
+            context = {
+                'report': 'created succesfully',
+                'new_review' : serializer.data
+            }
+            return Response(context)
+        else:
+            return Response({'report': 'not POSTed yet',
+                             'status': 'creation'})
+    else:
+        if request.method == 'POST':
+            data.mark = request.data.get('mark')
+            data.save()
+            serializer = serializers.ProductReview(data)
+            context = {
+                'report': 'updated succesfully',
+                'updated_review': serializer
+            }
+            return Response(context)
+        
+        else:
+            return Response({'report': 'not POSTed yet',
+                             'status': 'Updating session'})
+
+@api_view(["GET"])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def cart_active(request):
+    data = models.Cart.objects.filter(user = request.user, is_active = True).first()
+    
+    if data:
+        serializer = serializers.CartSerializer(data)
+        return Response(serializer.data)
+    else:
+        return Response({"report": 'you do not have any active cart yet'})
+
+
+@api_view(["GET"])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def cart_inactive(request):
+    data = models.Cart.objects.filter(user = request.user, is_active = False)
+    if data.first():
+        serializer = serializers.CartSerializer(data, many = True)
+        return Response(serializer.data)
+    else:
+        return Response({"report": 'you do not have any inactive cart yet'})
+
+
+@api_view(["GET"])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def cart_update(request, id):
+    data = models.Cart.objects.filter(id=id)
+    if data.first():
+        cart = data.first()
+        objects = models.CartProduct.objects.filter(card = cart)
+        for obj in objects:
+            prod = models.Product.objects.get(id = obj.product.id)
+            new_quant = obj.product.quantity-obj.quantity
+
+            if new_quant>=0:
+                prod.quantity = new_quant
+                prod.save()
+                data = models.Overall.objects.get(product = obj.product)
+                data.all_outcome +=obj.quantity
+                data.save()
+                models.ProductOut.objects.create(
+                    product = prod,
+                    amount = obj.quantity
+                )
+            else:
+                obj.quantity = prod.quantity
+                prod.quantity = 0
+                obj.save()
+                prod.save()
+                data = models.Overall.objects.get(product = obj.product)
+                data.all_outcome += obj.quantity
+                data.save()
+                models.ProductOut.objects.create(
+                    product = prod,
+                    amount = obj.quantity
+                )
+
+        cart.is_active = False
+        cart.save()
+        return Response ({'detail':'cart status updated succesfully'})
+    else:
+        return Response ({'detail':'cart status updated succesfully'})
+    
+
+@api_view(["GET"])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def cart_detail(request):
+    cart = models.Cart.objects.filter(is_active = True).first()
+    if cart:
+        prodcuts = models.CartProduct.objects.filter(card = cart)
+        cart_serializer = serializers.CartSerializer(cart)
+        product_serializer = serializers.CartProductSerializer(prodcuts, many=True)
+        context = {
+            'cart' : cart_serializer.data,
+            'related_products': product_serializer.data
+        }
+        return Response(context)
+    else:
+        return Response({'detail': 'there is no any cart to see the details'})
+
+@api_view(["GET"])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def cart_product(request, id): #id -> product_id
+    """ bu funksiyada cart_product yaratilmagan bo'lsa yaratadi, mavjud bo'lsa update qiladi. cart_product_CREATE, cart_product_UPDATE"""
+    cart = models.Cart.objects.filter(user = request.user).first()
+    if not cart:
+        new_cart = models.Cart.objects.create(
+            user = request.user
+        )
+        data = models.CartProduct.objects.create(
+            card = new_cart,
+            product = models.Product.objects.get(id = id),
+            quantity = 1
+        )
+        serializer = serializers.CartProductSerializer(data)
+        
+        return Response({'detail':'cart and cart_product created successfully', 'new_cart_product' : serializer.data})
+    else:
+        expect = models.CartProduct.objects.filter(product_id = id, card = cart).first()
+        if expect:
+            expect.quantity+=1
+            expect.save()
+            serializer = serializers.CartProductSerializer(expect)
+            return Response({'detail':'updated successfully', 'updated_cart_product' : serializer.data})
+        else:
+            data = models.CartProduct.objects.create(
+                card= cart,
+                product = models.Product.objects.get(id = id),
+                quantity = 1
+            )
+            serializer = serializers.CartProductSerializer(data)
+            return Response({'detail':'created successfully', 'new_cart_product' : serializer.data})
+
+@api_view(["GET"])
+@authentication_classes([SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
+def cart_product_delete(request,id): # id -> product_id
+    cart = models.Cart.objects.filter(user = request.user, is_active = True).first()
+    if cart:
+        expect = models.CartProduct.objects.filter(card__is_active = True, product_id = id).first()
+        print(expect)
+        if expect:
+            if expect.quantity > 1:
+                expect.quantity-=1
+                expect.save()
+                serializer = serializers.CartProductSerializer(expect)
+                return Response ({"detail": "Your cart-product's quantity reduced by one", "cart_product" : serializer.data})
+            elif expect.quantity == 1:
+                expect.delete()
+                return Response ({'detail': 'cart-product deleted successfully'})
+
+        else:
+            return Response ({'detail': 'you do not have that cart_product to delete'})
+
+    else:
+        ({'detail': 'you do not have cart and cart_product to delete'})
