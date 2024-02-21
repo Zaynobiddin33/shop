@@ -24,8 +24,8 @@ def index(request):
     }
     return render(request, 'index.html', context)
 
-def filtered(request, id):
-    products = models.Product.objects.filter(category_id = id)
+def filtered(request, slug):
+    products = models.Product.objects.filter(category__slug = slug)
     context = {
 
         'categorys': models.Category.objects.all(),
@@ -36,8 +36,8 @@ def filtered(request, id):
 
 
 
-def product_detail(request, id):
-    product = models.Product.objects.get(id=id)
+def product_detail(request, slug ) :
+    product = models.Product.objects.get(slug = slug) 
     categorys = models.Category.objects.all()
     recomendation = models.Product.objects.filter(
         category_id=product.category.id).exclude(id=product.id)[:3]
@@ -83,9 +83,9 @@ def carts(request):
     return render(request, 'cart/carts.html', context)
 
 
-def cart_detail(request, id):
-    cart = models.Cart.objects.get(id=id)
-    items = models.CartProduct.objects.filter(card=cart)
+def cart_detail(request, slug):
+    cart = models.Cart.objects.get(slug=slug)
+    items = models.CartProduct.objects.filter(card = cart)
     context = {
         'cart':cart,
         'items':items
@@ -138,8 +138,8 @@ def logout_user(request):
     return redirect('main:login')
 
 @login_required(login_url='main:login')
-def create_cart(request, id):           #agar foydalanuvchida Cart bo'lmasa yoki u aktiv bo'lmasa yangi Cart yaratadi
-    product = models.Product.objects.get(id = id)
+def create_cart(request, slug):           #agar foydalanuvchida Cart bo'lmasa yoki u aktiv bo'lmasa yangi Cart yaratadi
+    product = models.Product.objects.get(slug = slug)
     if models.Cart.objects.filter(user = request.user, is_active = True).first():
         return redirect('main:add_to_cart', id_product = product.id, id_user = request.user.id)
     else:
@@ -172,23 +172,23 @@ def wishlist(request):
     }
     return render(request, 'wish/list.html', context)
 
-def add_wish(request,id):
+def add_wish(request,slug):
     if not request.user.is_authenticated:
         return redirect ('main:login')
     previous_url = request.META.get('HTTP_REFERER')
-    product = models.Product.objects.get(id = id)
+    product = models.Product.objects.get(slug = slug)
     models.WishList.objects.create(
         product = product,
         user = request.user
     )
     return redirect (previous_url)
 
-def delete_wish(request, id):
+def delete_wish(request, slug):
     if request.META.get('HTTP_REFERER').startswith('http://127.0.0.1:8000/product'):
-        product = models.Product.objects.get(id = id)
+        product = models.Product.objects.get(slug = slug)
         models.WishList.objects.get(product = product).delete()
     else:
-        models.WishList.objects.get(id = id).delete()
+        models.WishList.objects.get(slug = slug).delete()
 
     previous_url = request.META.get('HTTP_REFERER')
     return redirect(previous_url)
@@ -212,9 +212,11 @@ def user_update(request):
     
     return render(request, 'user/update.html')
 
-def order_cart(request, id):
-    cart = models.Cart.objects.get(id=id)
+def order_cart(request, slug):
+    cart = models.Cart.objects.get(slug=slug)
+    print('q')
     objects = models.CartProduct.objects.filter(card = cart)
+    print('2')
     for obj in objects:
         prod = models.Product.objects.get(id = obj.product.id)
         new_quant = obj.product.quantity-obj.quantity
@@ -224,12 +226,13 @@ def order_cart(request, id):
             prod.save()
             data = models.Overall.objects.get(product = obj.product)
             data.all_outcome +=obj.quantity
-            data.save()
             models.ProductOut.objects.create(
                 product = prod,
                 amount = obj.quantity
             )
+            print('created')
         else:
+            print('if2')
             obj.quantity = prod.quantity
             prod.quantity = 0
             obj.save()
@@ -247,3 +250,5 @@ def order_cart(request, id):
     return redirect('main:carts')
 
 
+def test(request):
+    return render(request, 'just.html')

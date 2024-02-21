@@ -1,4 +1,6 @@
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from random import sample
+from string import ascii_letters, digits
 
 def search(request):
     result = {}
@@ -20,3 +22,10 @@ def page_generate(list, num, request):
     except EmptyPage:
         list = paginator.page(paginator.num_pages)
     return list
+
+def code_generate(num = 20):
+    if num<20:
+        num = 20
+    result = sample(ascii_letters+digits, num)
+    return "".join(result)
+    

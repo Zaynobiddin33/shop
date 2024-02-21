@@ -21,7 +21,7 @@ class ProductSerializer(ModelSerializer):
 class ProductImageSerializer(ModelSerializer):
     class Meta:
         model = ProductImage
-        fields = '__all__'
+        fields = ['image']
 
 
 class WishlistSerializer(ModelSerializer):

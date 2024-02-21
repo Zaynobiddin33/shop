@@ -11,6 +11,7 @@ from string import ascii_letters
 from .funcs import search, page_generate
 from django.core.paginator import Paginator
 from django.core.exceptions import FieldError
+from datetime import datetime
 
 
 def dashboard(request):
@@ -20,13 +21,40 @@ def dashboard(request):
     numusers = User.objects.all().count()
     numproducts = Product.objects.all().count()
     numcategories = Category.objects.all().count()
+    year = datetime.now().year
+    month = datetime.now().month
+    
+    daily_sell = []
+    for i in range(30):
+        day = i+1
+        amount = 0
+        a = ProductOut.objects.filter(date__year = year, date__month = month, date__day = day).order_by('date')
+        if a.first():
+            for i in a:
+                amount += i.amount
+            daily_sell.append(amount)
+        else:
+            daily_sell.append(0)
+    in_dollars = []
+    for i in range(30):
+        day = i+1
+        amount = 0
+        a = ProductOut.objects.filter(date__year = year, date__month = month, date__day = day).order_by('date')
+        if a.first():
+            for i in a:
+                amount += i.amount*i.product.price
+            in_dollars.append(amount)
+        else:
+            in_dollars.append(0)
     context = {
         'categorys':categorys,
         'products':products,
         'users':users,
         'numusers':numusers,
         'numproducts':numproducts,
-        'numcategories':numcategories
+        'numcategories':numcategories,
+        'info':daily_sell,
+        'in_dollars': in_dollars
     }
     return render(request, 'dashboard/index.html', context)
 
@@ -39,8 +67,8 @@ def category_list(request):
     return render(request, 'dashboard/category/list.html', {'categories':categories})
 
 
-def category_detail(request, id):
-    category = Category.objects.get(id=id)
+def category_detail(request, slug):
+    category = Category.objects.get(slug=slug)
     products = Product.objects.filter(category=category, is_active=True)
     context = {
         'category':category,
@@ -49,16 +77,16 @@ def category_detail(request, id):
     return render(request, 'category/list.html', context)
 
 
-def category_update(request, id):
-    category = Category.objects.get(id=id)
+def category_update(request, slug):
+    category = Category.objects.get(slug=slug)
     category.name = request.POST['name']
     category.save()
 
     return redirect('category_detail', {'category':category})
 
 
-def category_delete(request, id):
-    category = Category.objects.get(id=id)
+def category_delete(request, slug):
+    category = Category.objects.get(slug=slug)
     category.delete()
     return redirect('dashboard:category_list')
 
@@ -122,8 +150,8 @@ def product_create(request):
 
     return render(request, 'dashboard/products/create.html', context)
 
-def product_update(request, id):
-    product = Product.objects.get(id = id)
+def product_update(request, slug):
+    product = Product.objects.get(slug = slug)
     images = ProductImage.objects.filter(product = product)
     context = {
         'product':product,
@@ -151,12 +179,12 @@ def product_update(request, id):
         product.save()
     return render (request, 'dashboard/products/update.html', context)
 
-def product_delete(request, id):
-    Product.objects.get(id = id).delete()
+def product_delete(request, slug):
+    Product.objects.get(slug = slug).delete()
     return redirect('dashboard:products')
 
-def image_delete(request, id):
-    ProductImage.objects.get(id = id).delete()
+def image_delete(request, slug):
+    ProductImage.objects.get(slug = slug).delete()
     previous_url = request.META.get('HTTP_REFERER')
     return redirect(previous_url )
 
@@ -176,8 +204,8 @@ def admins(request):
     admins = User.objects.filter(is_staff = True)
     return render(request, 'dashboard/user/list.html', {'admins': admins})
 
-def delete_admin(request, id):
-    User.objects.get(id = id).delete()
+def delete_admin(request, slug):
+    User.objects.get(slug = slug).delete()
     return redirect('dashboard:admins')
 
 #creating income
@@ -205,14 +233,14 @@ def list_income(request):
     
     return render(request, 'dashboard/income/list.html', context)
 
-def delete_income(request, id):
-    ProductIncome.objects.get(id=id).delete()
+def delete_income(request, slug):
+    ProductIncome.objects.get(slug=slug).delete()
     return redirect('dashboard:list_enter')
 
-def update_income(request, id):
+def update_income(request, slug):
     if request.method == 'POST':
         quantity = int(request.POST['quantity'])
-        income = ProductIncome.objects.get(id=id)
+        income = ProductIncome.objects.get(slug=slug)
         income.amount = quantity
         income.save()
     return redirect('dashboard:list_enter')
@@ -311,9 +339,9 @@ def excel_input(request):
                     )
     return render (request, 'dashboard/excel/input.html')
 
-def product_detail(request, id):
-    product = Product.objects.get(id = id)
-    images = ProductImage.objects.filter(product_id = id)
+def product_detail(request, slug):
+    product = Product.objects.get(slug = slug)
+    images = ProductImage.objects.filter(product__slug = slug)
     all = Product_income_outcome.objects.filter(product = product).order_by("-date")
     p = Paginator(all, 10)
     page = request.GET.get('page')

@@ -50,16 +50,16 @@
                                                     {%endif%}
 
                                                     <td name="bstable-actions"><div class="btn-list">
-                                                        <a style="margin-right: 1vw;" href="{%url 'dashboard:product_update' product.id%}">
+                                                        <a style="margin-right: 1vw;" href="{%url 'dashboard:product_update' product.slug%}">
                                                             <button id="bEdit" type="button" class="btn btn-success">
                                                                 <span class="fe fe-edit"> CHANGE THE ITEM</span>
                                                             </button>
                                                         </a>   
                                                         
-                                                        <a href="{% url 'dashboard:product_delete' product.id %}" style="margin-right: 1vw;"><button id="bDel" type="button" class="btn  btn btn-danger">
+                                                        <a href="{% url 'dashboard:product_delete' product.slug %}" style="margin-right: 1vw;"><button id="bDel" type="button" class="btn  btn btn-danger">
                                                             <span class="fe fe-trash-2"> Delete </span>
                                                         </button></a>
-                                                        <a href="{% url 'dashboard:detail' product.id %}"><button id="bDel" type="button" class="btn  btn btn-primary">
+                                                        <a href="{% url 'dashboard:detail' product.slug %}"><button id="bDel" type="button" class="btn  btn btn-primary">
                                                             Details </span>
                                                         </button></a>
 

@@ -57,7 +57,7 @@
 
                                                     <td name="bstable-actions"><div class="btn-list"></div>
                                                         {%if admin.is_superuser != True%}
-                                                        <a href="{% url 'dashboard:delete_admin' admin.id %}"><button id="bDel" type="button" class="btn  btn btn-danger">
+                                                        <a href="{% url 'dashboard:delete_admin' admin.slug %}"><button id="bDel" type="button" class="btn  btn btn-danger">
                                                             <span class="fe fe-trash-2"> Delete </span>
                                                         </button></a>
                                                         {%else%}

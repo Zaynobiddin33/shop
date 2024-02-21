@@ -71,6 +71,7 @@ html{
 							<a style="background-color: transparent; border: 1px solid white; color: white; margin: 10px;" class="btn" href="{%url 'main:carts'%}">My Cart</a>
 							<a style="background-color: transparent; border: 1px solid white; color: white; margin: 10px;" class="btn" href="{%url 'main:wishlist'%}">My wishlist</a>
 							<a style="background-color: transparent; border: 1px solid white; color: white; margin: 10px;" class="btn" href="{%url 'main:user_update'%}">Profile settings</a>
+							<a style="background-color: transparent; border: 1px solid white; color: white; margin: 10px;" class="btn" href="{%url 'main:logout'%}">Logout</a>
 
 							{%else%}
 							<a style="background-color: transparent; border: 1px solid white; color: white; margin: 10px; margin-right: 30px;" class="btn" href="{%url 'main:login'%}">Login</a>
@@ -102,7 +103,7 @@ html{
 									<div class="col1 me-one">
 										<ul>
 											{% for category in categorys%}
-											<li><a href="{%url 'main:filtered' category.id%}">{{category.name}}</a></li>
+											<li><a href="{%url 'main:filtered' category.slug%}">{{category.name}}</a></li>
 											{% endfor %}
 										</ul>
 									</div>

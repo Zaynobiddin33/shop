@@ -2,19 +2,32 @@ from django.db import models
 from django.contrib.auth.models import User
 from functools import reduce
 from PIL import Image
+from api.funcs import code_generate
 
 class Category(models.Model):
     name = models.CharField(max_length=255, unique=True)
+    slug = models.CharField(max_length = 255, blank = True)
 
     def __str__(self):
         return self.name
-
+    
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            res = True
+            data = code_generate()
+            while res:
+                if not Category.objects.filter(slug = data).first():
+                    self.slug = data
+                    res = False
+        super(Category, self).save(*args, **kwargs)
+        
 
 class Product(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     quantity = models.IntegerField()
     price = models.DecimalField(decimal_places=2, max_digits=10)
+    slug = models.CharField(max_length = 255, blank = True)
     currency = models.SmallIntegerField(
         choices=(
             (1,'Dollar'), 
@@ -38,7 +51,7 @@ class Product(models.Model):
         for i in reviews:
             result += i.mark
         try:
-            result = result / reviews.count()
+            result = round( (result / reviews.count())*10)/10
         except ZeroDivisionError:
             result = 0
         return result
@@ -52,26 +65,71 @@ class Product(models.Model):
     @property 
     def is_active(self):
         return self.quantity > 0
+    
+    def __str__(self) -> str:
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            res = True
+            data = code_generate()
+            while res:
+                if not Product.objects.filter(slug = data).first():
+                    self.slug = data
+                    res = False
+        super(Product, self).save(*args, **kwargs)
 
 class ProductImage(models.Model):
     image = models.ImageField(upload_to='products/')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    slug = models.CharField(max_length = 255, blank = True)
 
+    def save(self, *args, **kwargs):
+        if self.pk:
+            res = True
+            data = code_generate()
+            while res:
+                if not ProductImage.objects.filter(slug = data).first():
+                    self.slug = data
+                    res = False
+        super(ProductImage, self).save(*args, **kwargs)
 
 class WishList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    slug = models.CharField(max_length = 255, blank = True)
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            res = True
+            data = code_generate()
+            while res:
+                if not WishList.objects.filter(slug = data).first():
+                    self.slug = data
+                    res = False
+        super(WishList, self).save(*args, **kwargs)
 
 class ProductReview(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     mark = models.SmallIntegerField()
+    slug = models.CharField(max_length = 255, blank = True)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            res = True
+            data = code_generate()
+            while res:
+                if not ProductReview.objects.filter(slug = data).first():
+                    self.slug = data
+                    res = False
+        super(ProductReview, self).save(*args, **kwargs)
 
 
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
+    slug = models.CharField(max_length = 255, blank = True)
 
     @property
     def quantity(self):
@@ -89,10 +147,21 @@ class Cart(models.Model):
         return result
 
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            res = True
+            data = code_generate()
+            while res:
+                if not Cart.objects.filter(slug = data).first():
+                    self.slug = data
+                    res = False
+        super(Cart, self).save(*args, **kwargs)
+
 class CartProduct(models.Model):
     card = models.ForeignKey(Cart, on_delete=models.CASCADE,)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
+    slug = models.CharField(max_length = 255, blank = True)
     
     @property
     def total_price(self):
@@ -102,11 +171,22 @@ class CartProduct(models.Model):
             result = self.product.price * self.quantity
         return result
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            res = True
+            data = code_generate()
+            while res:
+                if not CartProduct.objects.filter(slug = data).first():
+                    self.slug = data
+                    res = False
+        super(CartProduct, self).save(*args, **kwargs)
+
 
 class ProductIncome(models.Model):
     product = models.ForeignKey(Product, on_delete = models.CASCADE)
     amount = models.IntegerField()
     date = models.DateTimeField(auto_now_add = True)
+    slug = models.CharField(max_length = 255, blank = True)
 
     def save(self, *args, **kwargs):
         self.product_name = self.product.name
@@ -121,6 +201,12 @@ class ProductIncome(models.Model):
             inc.save()
             super(ProductIncome, self).save(*args, **kwargs)
         else:
+            res = True
+            data = code_generate()
+            while res:
+                if not ProductIncome.objects.filter(slug = data).first():
+                    self.slug = data
+                    res = False    
             super(ProductIncome, self).save(*args, **kwargs)
             self.product.quantity += self.amount
             self.product.save()
@@ -141,6 +227,7 @@ class ProductIncome(models.Model):
 class Overall(models.Model):
     product = models.ForeignKey(Product, on_delete = models.CASCADE)
     all_outcome = models.IntegerField(default = 0)
+    slug = models.CharField(max_length = 255, blank = True)
 
     @property
     def all_income(self):
@@ -150,12 +237,30 @@ class Overall(models.Model):
             income += obj.amount
         return income
 
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            res = True
+            data = code_generate()
+            while res:
+                if not Overall.objects.filter(slug = data).first():
+                    self.slug = data
+                    res = False
+        super(Overall, self).save(*args, **kwargs)
+
 class ProductOut(models.Model):
     product = models.ForeignKey(Product, on_delete = models.CASCADE)
     amount = models.IntegerField()
     date = models.DateTimeField(auto_now_add = True)
+    slug = models.CharField(max_length = 255, blank = True)
 
     def save(self, *args, **kwargs):
+        if not self.pk:
+            res = True
+            data = code_generate()
+            while res:
+                if not ProductOut.objects.filter(slug = data).first():
+                    self.slug = data
+                    res = False
         super(ProductOut, self).save(*args, **kwargs)
         Product_income_outcome.objects.create(
                 product = self.product,
@@ -163,7 +268,7 @@ class ProductOut(models.Model):
                 foreign_id = self.id,
                 type = 2
             )
-        
+    
 
 
 class Product_income_outcome(models.Model):
@@ -172,4 +277,16 @@ class Product_income_outcome(models.Model):
     date = models.DateTimeField(auto_now_add = True)
     foreign_id = models.SmallIntegerField()
     type  = models.SmallIntegerField()
+    slug = models.CharField(max_length = 255, blank = True)
+
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            res = True
+            data = code_generate()
+            while res:
+                if not Product_income_outcome.objects.filter(slug = data).first():
+                    self.slug = data
+                    res = False
+        super(Product_income_outcome, self).save(*args, **kwargs)
     

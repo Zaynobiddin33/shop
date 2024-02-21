@@ -70,7 +70,7 @@
                                 <h6 class="modal-title">Kirimni o`zgartirish</h6><button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
                             </div>
                             <div class="modal-body">
-                                <form action="{% url 'dashboard:update_enter' i.id %}" method="post">
+                                <form action="{% url 'dashboard:update_enter' i.slug %}" method="post">
                                     {% csrf_token %}
                                     <input type="text" class="form-control" name="quantity" value="{{i.quantity}}">
                                 
@@ -90,7 +90,7 @@
                                 <h6 class="modal-title">Maxsulotni o`chriish</h6><button aria-label="Close" class="btn-close" data-bs-dismiss="modal"><span aria-hidden="true">&times;</span></button>
                             </div>
                             <div class="modal-body">
-                                <form action="{% url 'dashboard:delete_enter' i.id %}" method="get">
+                                <form action="{% url 'dashboard:delete_enter' i.slug %}" method="get">
                                     <label for="my_chkb">O`chirmoqchimisiz? </label>
                                     <input type="checkbox"  id="my_chkb">
                                 </div>

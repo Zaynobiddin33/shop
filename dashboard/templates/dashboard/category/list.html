@@ -46,13 +46,13 @@
                                                     <tr>
                                                     <td style="font-size: 18px;">{{category.name}}</td>
                                                     <td name="bstable-actions"><div class="btn-list">
-                                                        <a style="margin-right: 1vw;" href="{%url 'dashboard:category_update' category.id%}">
+                                                        <a style="margin-right: 1vw;" href="{%url 'dashboard:category_update' category.slug%}">
                                                             <button id="bEdit" type="button" class="btn btn-success">
                                                                 <span class="fe fe-edit"> CHANGE THE CATEGORY</span>
                                                             </button>
                                                         </a>   
                                                         
-                                                        <a href="{% url 'dashboard:category_delete' category.id %}"><button id="bDel" type="button" class="btn  btn btn-danger">
+                                                        <a href="{% url 'dashboard:category_delete' category.slug %}"><button id="bDel" type="button" class="btn  btn btn-danger">
                                                             <span class="fe fe-trash-2"> Delete </span>
                                                         </button></a>
 

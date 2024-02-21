@@ -22,7 +22,7 @@
 				</ul>
                 {% for i in items %}
 				<ul class="cart-header" style="display: flex;">
-					<a href="{% url 'main:cart_detail_delete'%}?items_id={{i.id}}"><div class="close1"></div></a>
+					<a href="{% url 'main:cart_detail_delete'%}?items_id={{i.slug}}"><div class="close1"></div></a>
                     <li><span>{{i.product.name}}</span></li>
                     <li><span>{{i.quantity}}</span></li>
                     <li><span>{{i.product.price}}</span></li>
@@ -32,7 +32,7 @@
                     <div class="clearfix"> </div>
 				</ul>
                 {% endfor %}
-				<a style="width: 100%; color: white;" class="col-12 btn btn-success" href="{%url 'main:order' cart.id%}">Xarid qilish</a>
+				<a style="width: 100%; color: white;" class="col-12 btn btn-success" href="{%url 'main:order' cart.slug%}">Xarid qilish</a>
 			</div>
 			</div>  
 		 </div>
