@@ -16,7 +16,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="{%static 'assets2/images/brand/favicon.ico'%}">
 
     <!-- TITLE -->
-    <title>Sash - Bootstrap 5 Admin & Dashboard Template</title>
+    <title>Login</title>
 
     <!-- BOOTSTRAP CSS -->
     <link id="style" href="{%static 'assets2/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -78,7 +78,7 @@
                     <div class="wrap-login100 p-6">
                         <form class="login100-form validate-form" method="post"> {%csrf_token%}
                             <span class="login100-form-title">
-									LOG IN
+                                Вход
 								</span>
                                 {%if login_error%}
                                 <h6 style="color: red;">{{login_error}}</h6>
@@ -87,13 +87,13 @@
                                 <a  class="input-group-text bg-white text-muted">
                                     <i class="mdi mdi-account" aria-hidden="true"></i>
                                 </a>
-                                <input class="input100 border-start-0 ms-0 form-control" name="username" type="text" required placeholder="User name">
+                                <input class="input100 border-start-0 ms-0 form-control" name="username" type="text" required placeholder="имя пользователя">
                             </div>
                             <div class=" input-group">
                                 <a href="javascript:void(0)" class="input-group-text bg-white text-muted">
                                     <i class="zmdi zmdi-eye" aria-hidden="true"></i>
                                 </a>
-                                <input class="input100 border-start-0 ms-0 form-control" required type="password" name="password" placeholder="Password">
+                                <input class="input100 border-start-0 ms-0 form-control" required type="password" name="password" placeholder="пароль">
                             </div>
                             <div class="container-login100-form-btn">
                                 <button type="submit" class="login100-form-btn btn-primary">
@@ -101,7 +101,7 @@
                                 </button>
                             </div>
                             <div class="text-center pt-3">
-                                <p class="text-dark mb-0 d-inline-flex">Don't have an account? <a href="{%url 'main:register'%}">register</a></p>
+                                <p class="text-dark mb-0 d-inline-flex">У вас нет учетной записи? <a href="{%url 'main:register'%}">регистрируемся</a></p>
                             </div>
                         </form>
                     </div>

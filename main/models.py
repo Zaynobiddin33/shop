@@ -128,7 +128,17 @@ class ProductReview(models.Model):
 
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    # is_active = models.BooleanField(default=True)
+    ORDER_STATES = (
+        (1, 'Got'),
+        (2, 'Paid'),
+        (3, 'Cancelled'),
+        (4, 'Delivered'),
+    )
     is_active = models.BooleanField(default=True)
+    status = models.IntegerField( choices = ORDER_STATES, default = 1)
+    crated_at = models.DateTimeField(auto_now_add = True)
+    updated_at = models.DateTimeField(auto_now = True)
     slug = models.CharField(max_length = 255, blank = True)
 
     @property
@@ -290,3 +300,7 @@ class Product_income_outcome(models.Model):
                     res = False
         super(Product_income_outcome, self).save(*args, **kwargs)
     
+class Contact(models.Model):
+    name = models.CharField(max_length = 200)
+    email = models.EmailField()
+    message = models.TextField()

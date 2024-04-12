@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-()021k1xzla=hh&03n%wi7h-yjc_nshb+bxj%qvmrpzn^yzk5c
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -80,23 +80,27 @@ WSGI_APPLICATION = 'Project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+
 
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'shop',ç
-#         'USER': 'postgres',
-#         'PASSWORD': '1300',
-#         'HOST': 'localhost',
-#         'PORT': '',
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'ixjuhoju',                      
+        'USER': 'ixjuhoju',                     
+        'PASSWORD': 'u7myx8ihVhJT-or-cUkW9YhX4_fXzWjf',             
+        'HOST': 'batyr.db.elephantsql.com',     
+        'PORT': '5432',                         
+    }
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

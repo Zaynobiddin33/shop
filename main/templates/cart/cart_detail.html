@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
+{%block title%}
+<title>Cart detail</title>
+{%endblock%}
 
 {% block content %}
 
@@ -6,33 +9,35 @@
 	<div class="ckeckout">
 		<div class="container">
 			<div class="ckeck-top heading">
-				<h2>Savatcha</h2>
+				<h2>Корзина</h2>
 			</div>
 			<div class="ckeckout-top">
 			<div class="cart-items">
-			 <h3>Savatchadagi masulotlar</h3>
+			 <h3>Товары в корзине</h3>
 			<div class="in-check" >
 				<ul class="unit" style="display: flex;">
-					<li><span>Maxsulot</span></li>
-					<li><span>Maxsulot soni</span></li>		
-					<li><span>Maxsulot narxi</span></li>
-					<li><span>Umumiy narx</span></li>
-					<li><span>Maxsulot rasmi</span></li>
+					<li><span style="font-size: 15px;">Продукт</span></li>
+					<li><span style="font-size: 15px;">Номер продукта</span></li>		
+					<li><span style="font-size: 15px;">Цена продукта</span></li>
+					<li><span style="font-size: 15px;">Итоговая цена</span></li>
+					<li><span style="font-size: 15px;">Изображение продукта</span></li>
 					<div class="clearfix"> </div>
 				</ul>
                 {% for i in items %}
 				<ul class="cart-header" style="display: flex;">
-					<a href="{% url 'main:cart_detail_delete'%}?items_id={{i.slug}}"><div class="close1"></div></a>
-                    <li><span>{{i.product.name}}</span></li>
-                    <li><span>{{i.quantity}}</span></li>
-                    <li><span>{{i.product.price}}</span></li>
-                    <li><span>{{i.total_price}}</span></li>
+					
+                    <li><span style="font-size: 15px;">{{i.product.name}}</span></li>
+                    <li><span style="font-size: 15px;">{{i.quantity}}</span></li>
+                    <li><span style="font-size: 15px;">{{i.product.price}}</span></li>
+                    <li><span style="font-size: 15px;">{{i.total_price}}</span></li>
                     <li class="ring-in"><a href="#" ><img src="{{ i.product.baner_image.url }}" class="img-responsive" alt="" width="150px"></a>
                     </li>
                     <div class="clearfix"> </div>
 				</ul>
                 {% endfor %}
-				<a style="width: 100%; color: white;" class="col-12 btn btn-success" href="{%url 'main:order' cart.slug%}">Xarid qilish</a>
+				{%if cart.is_active == True%}
+				<a style="width: 100%; color: white; font-size: 15px;" class="col-12 btn btn-success" href="{%url 'main:order' cart.slug%}">Покупка</a>
+				{%endif%}
 			</div>
 			</div>  
 		 </div>

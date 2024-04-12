@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
-
+{%block title%}
+<title>Carts</title>
+{%endblock%}
 {% block content %}
 
 	<!--start-ckeckout-->
@@ -10,38 +12,61 @@
 			</div>
 			<div class="ckeckout-top">
 			<div class="cart-items">
-			 <h3>Faol Savatchalar</h3>
+			 <h3>Некупленные корзины</h3>
 			<div class="in-check" >
 				<ul class="unit">
-					<li><span>Maxsulotlar soni</span></li>
-					<li><span>Maxsulotlar narxi</span></li>
-					<li><span>Batafsil Savatni ko'rish</span></li>
+					<li><span style="font-size: 15px;">Количество продуктов</span></li>
+					<li><span style="font-size: 15px;">Цена продукта</span></li>
+					<li><span style="font-size: 15px;">Подробнее Корзина</span></li>
 
 					<div class="clearfix"></div>
 				</ul>
                 {% for cart in active %}
 				<ul class="cart-header">
 					
-						<li><span class="name">{{cart.quantity}}</span></li>
-						<li><span class="cost">{{cart.total_price}}</span></li>
-						<li><span class="cost"><a href="{%url 'main:cart_detail' cart.slug%}"><Button class="btn btn-primary">Savatni ko'rish</Button></a></span></li>
+						<li><span class="name" style="font-size: 15px;">{{cart.quantity}}</span></li>
+						<li><span class="cost" style="font-size: 15px;">{{cart.total_price}}</span></li>
+						<li><span class="cost" ><a href="{%url 'main:cart_detail' cart.slug%}" ><Button class="btn btn-primary" style="font-size: 13px;">Посмотреть корзину</Button></a></span></li>
 					
 					<div class="clearfix"> </div>
 				</ul>
                 {% endfor %}
 				
 			</div>
-			 <h3>Nofaol Savatchalar</h3>
+			<br><br><br><br><br>
+			 <h3>Купленные корзины</h3>
 			<div class="in-check" >
 				<ul class="unit">
-					<li><span>Maxsulotlar soni</span></li>
-					<li><span>Maxsulotlar narxi</span></li>		
+					<li><span style="font-size: 15px;">Количество продуктов</span></li>
+					<li><span style="font-size: 15px;">Цена продукта</span></li>
+					<li><span style="font-size: 15px;">Статус корзины</span></li>	
+					<li><span style="font-size: 15px;">Подробнее Корзина</span></li>
 					<div class="clearfix"></div>
 				</ul>
                 {% for cart in in_active %}
 				<ul class="cart-header">
-						<li><span class="name">{{cart.quantity}}</span></li>
-						<li><span class="cost">{{cart.total_price}}</span></li>
+						<li><span class="name" style="font-size: 15px;">{{cart.quantity}}</span></li>
+						<li><span class="cost" style="font-size: 15px;">{{cart.total_price}}</span></li>
+						<li><span class="cost" style="font-size: 15px;">
+							{%if cart.status == 1%}
+							<div class="bg-secondary" style="width: 150px; display: flex; justify-content: center; border-radius: 30px; border: 1px solid black;">
+								<h4 style="padding: 5px; color: white;">В процессе</h4>
+							</div>
+							{%elif cart.status == 2%}
+							<div style="width: 150px; display: flex; justify-content: center; border-radius: 30px; border: 1px solid black; background-color: orange;">
+								<h4 style="padding: 5px;">Оплаченный</h4>
+							</div>
+							{%elif cart.status == 3%}
+							<div class="bg-danger" style="width: 150px; display: flex; justify-content: center; border-radius: 30px; border: 1px solid black; background-color: rgb(255, 111, 111);">
+								<h4 style="padding: 5px;">Отменено</h4>
+							</div>
+							{%elif cart.status == 4%}
+							<div  style="width: 150px; display: flex; justify-content: center; border-radius: 30px; border: 1px solid black; background-color: rgb(24, 205, 24);">
+								<h4 style="padding: 5px;">Доставленный</h4>
+							</div>
+							{%endif%}
+						</span></li>
+						<li><span class="cost"><a href="{%url 'main:cart_detail' cart.slug%}"><Button class="btn btn-primary" style="font-size: 13px;">Посмотреть корзину</Button></a></span></li>
 					<div class="clearfix"> </div>
 				</ul>
                 {% endfor %}

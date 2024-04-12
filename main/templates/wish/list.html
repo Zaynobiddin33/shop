@@ -1,28 +1,32 @@
 {% extends 'base.html' %}
 
+{%block title%}
+<title>Wish list</title>
+{%endblock%}
+
 {% block content %}
 
 	<!--start-ckeckout-->
 	<div class="ckeckout">
 		<div class="container">
 			<div class="ckeck-top heading">
-				<h2>Yoqtirilganlar</h2>
+				<h2>Избранное</h2>
 			</div>
 			<div class="ckeckout-top">
 			<div class="cart-items">
-			 <h3>Saqlalangan maxsulotlar</h3>
+			 <h3>Хранимые продукты</h3>
 			<div class="in-check" >
 				<ul class="unit" style="display: flex;">
-					<li><span>Maxsulot</span></li>
-					<li><span>Maxsulot narxi</span></li>
-					<li><span>Maxsulot rasmi</span></li>
+					<li><span>Продукт</span></li>
+					<li><span>Цена продукта</span></li>
+					<li><span>Изображение продукта</span></li>
 					<div class="clearfix"> </div>
 				</ul>
                 {% for i in items %}
 				<ul class="cart-header" style="display: flex;">
 					<a href="{% url 'main:delete_wish' i.slug %}"><div class="close1"></div></a>
                     <li><span>{{i.product.name}}</span></li>
-                    <li><span>{{i.product.price}}</span></li>
+                    <li><span>${{i.product.price}}</span></li>
                     <li class="ring-in"><a href="#" ><img src="{{ i.product.baner_image.url }}" class="img-responsive" alt="" width="150px"></a>
                     </li>
                     <div class="clearfix"> </div>

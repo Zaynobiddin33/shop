@@ -94,6 +94,7 @@ html[xmlns] .flexslider .slides {
 .flexslider .slides img {
   height: auto;
 }
+
 .flex-viewport {
   max-height: 450px;
   -webkit-transition: all 1s ease;
@@ -110,7 +111,7 @@ html[xmlns] .flexslider .slides {
   margin-right: 5px;
 }
 .flex-direction-nav {
-  *height: 0;
+  height: 0;
 }
 li.clone {
     width: 303px!important;

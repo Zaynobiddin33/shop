@@ -16,7 +16,7 @@
     <link rel="shortcut icon" type="image/x-icon" href="{%static 'assets2/images/brand/favicon.ico'%}">
 
     <!-- TITLE -->
-    <title>Sash - Bootstrap 5 Admin & Dashboard Template</title>
+    <title>Settings</title>
 
     <!-- BOOTSTRAP CSS -->
     <link id="style" href="{%static 'assets2/plugins/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
@@ -78,7 +78,7 @@
                     <div class="wrap-login100 p-6">
                         <form class="login100-form validate-form" method="post"> {%csrf_token%}
                             <span class="login100-form-title">
-									Wanna change the username or password?
+                                Хотите изменить имя пользователя или пароль?
 								</span>
                                 {%if login_error%}
                                 <h6 style="color: red;">{{login_error}}</h6>
@@ -87,27 +87,27 @@
                                 <a  class="input-group-text bg-white text-muted">
                                     <i class="mdi mdi-account" aria-hidden="true"></i>
                                 </a>
-                                <input class="input100 border-start-0 ms-0 form-control" name="username" type="text" value="{{user.username}}" required placeholder="User name">
+                                <input class="input100 border-start-0 ms-0 form-control" name="username" type="text" value="{{user.username}}" required placeholder="Имя пользователя">
                             </div>
 
                             <div style="margin-bottom: 10px;" class=" input-group">
                                 <a href="javascript:void(0)" class="input-group-text bg-white text-muted">
                                     <i class="zmdi zmdi-eye" aria-hidden="true"></i>
                                 </a>
-                                <input class="input100 border-start-0 ms-0 form-control" required type="password" name="password" placeholder="Password">
+                                <input class="input100 border-start-0 ms-0 form-control" required type="password" name="password" placeholder="Пароль">
                             </div>
                             
                             <div class=" input-group">
                                 <a href="javascript:void(0)" class="input-group-text bg-white text-muted">
                                     <i class="zmdi zmdi-eye" aria-hidden="true"></i>
                                 </a>
-                                <input class="input100 border-start-0 ms-0 form-control" required type="password" name="password" placeholder="rewrite the new password">
+                                <input class="input100 border-start-0 ms-0 form-control" required type="password" name="password" placeholder="Перепишите новый пароль">
                             </div>
                             <div class="container-login100-form-btn">
                                 <button type="submit" class="login100-form-btn btn-primary">
-										Save changes
+                                    Сохранить изменения
                                 </button>
-                                <a class=" btn " href="{%url 'main:index'%}">Cancel</a>
+                                <a class=" btn " href="{%url 'main:index'%}">Отмена</a>
                             </div>
                             <div class="text-center pt-3">
                             

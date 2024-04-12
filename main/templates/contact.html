@@ -1,0 +1,43 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css2/Контакты.css'%}">
+    <title>Contact</title>
+    <style></style>
+</head>
+<body>
+  
+  <h1 style="justify-content: center; display: flex;" style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Свяжись с нами</h1>
+  <a href="{%url 'main:index'%}" style=" padding: 10px; color: white; text-decoration: none; border-radius: 20px; margin: 20px;"><svg style="color:black;" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-arrow-left-circle-fill" viewBox="0 0 16 16">
+    <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0m3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
+  </svg></a>
+    <div id="form-main">
+        <div id="form-div">
+          <form class="form" id="form1" method="post"> {%csrf_token%}
+            
+            <p class="name">
+              <input name="name" type="text" class="validate[required,custom[onlyLetter],length[0,100]] feedback-input" placeholder="Имя" id="name" />
+            </p>
+            
+            <p class="email">
+              <input name="email" type="text" class="validate[required,custom[email]] feedback-input" id="email" placeholder="Почта" />
+            </p>
+            
+            <p class="text">
+              <textarea name="message" class="validate[required,length[6,300]] feedback-input" id="comment" placeholder="Коментарии"></textarea>
+            </p>
+            
+            
+            <div class="submit">
+              <input type="submit" value="Отправить" id="button-blue"/>
+              <div class="ease"></div>
+            </div>
+          </form>
+        </div> 
+    
+</body>
+</html>

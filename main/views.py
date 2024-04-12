@@ -5,6 +5,8 @@ from django.db.models import Q
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required 
 from django.contrib.auth import update_session_auth_hash
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponseRedirect
 
 
 def index(request):
@@ -88,7 +90,8 @@ def cart_detail(request, slug):
     items = models.CartProduct.objects.filter(card = cart)
     context = {
         'cart':cart,
-        'items':items
+        'items':items,
+        'categorys': models.Category.objects.all(),
     }
     return render(request, 'cart/cart_detail.html', context)
 
@@ -98,8 +101,12 @@ def cart_detail_delete(request):
     item = models.CartProduct.objects.get(id=item_id)
     cart_id = item.card.id
     item.delete()
-    return redirect('main:cart_detail', cart_id)
+    previous_page = request.META.get('HTTP_REFERER')
 
+    # Redirect back to the previous page
+    return HttpResponseRedirect(previous_page)
+
+@csrf_exempt
 def login_user(request):
     login_error = False
     if request.method == "POST":
@@ -114,6 +121,7 @@ def login_user(request):
     return render(request, 'login/login.html', {"login_error": login_error})
 
 
+@csrf_exempt
 def regist(request):
     error = False
     if request.method == 'POST':
@@ -135,7 +143,7 @@ def regist(request):
 
 def logout_user(request):
     logout(request)
-    return redirect('main:login')
+    return redirect('main:index')
 
 @login_required(login_url='main:login')
 def create_cart(request, slug):           #agar foydalanuvchida Cart bo'lmasa yoki u aktiv bo'lmasa yangi Cart yaratadi
@@ -247,8 +255,22 @@ def order_cart(request, slug):
 
     cart.is_active = False
     cart.save()
-    return redirect('main:carts')
+
+    return redirect(f'https://t.me/numi_store_bot?start={cart.id}')
 
 
-def test(request):
-    return render(request, 'just.html')
+def contact(request):
+    if request.method == 'POST':
+        name = request.POST['name']
+        email = request.POST['email']
+        message = request.POST['message']
+        models.Contact.objects.create(
+            name = name,
+            email = email,
+            message = message
+        )
+        previous_page = request.META.get('HTTP_REFERER')
+
+        # Redirect back to the previous page
+        return redirect('main:index')
+    return render(request, 'contact.html')

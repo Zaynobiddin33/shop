@@ -25,6 +25,6 @@ urlpatterns = [
     path('settings', views.user_update, name = 'user_update'),
     path('order/<str:slug>', views.order_cart, name = 'order'),
 
-    path('just', views.test)
+    path('contact', views.contact, name = 'contact')
 
 ]
