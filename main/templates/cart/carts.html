@@ -25,7 +25,7 @@
 				<ul class="cart-header">
 					
 						<li><span class="name" style="font-size: 15px;">{{cart.quantity}}</span></li>
-						<li><span class="cost" style="font-size: 15px;">{{cart.total_price}}</span></li>
+						<li><span class="cost" style="font-size: 15px;">{{cart.total_price}} so'm</span></li>
 						<li><span class="cost" ><a href="{%url 'main:cart_detail' cart.slug%}" ><Button class="btn btn-primary" style="font-size: 13px;">Посмотреть корзину</Button></a></span></li>
 					
 					<div class="clearfix"> </div>
@@ -46,7 +46,7 @@
                 {% for cart in in_active %}
 				<ul class="cart-header">
 						<li><span class="name" style="font-size: 15px;">{{cart.quantity}}</span></li>
-						<li><span class="cost" style="font-size: 15px;">{{cart.total_price}}</span></li>
+						<li><span class="cost" style="font-size: 15px;">{{cart.total_price}} so'm</span></li>
 						<li><span class="cost" style="font-size: 15px;">
 							{%if cart.status == 1%}
 							<div class="bg-secondary" style="width: 150px; display: flex; justify-content: center; border-radius: 30px; border: 1px solid black;">
