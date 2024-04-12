@@ -60,17 +60,22 @@ def product_detail(request, slug ) :
     if request.method == 'POST':
         user = request.user
         mark = request.POST['rate']
+       
         product = models.Product.objects.get(id = request.POST['product_id'])
-        if models.ProductReview.objects.filter(user = user, product = product).first():
-            data =  models.ProductReview.objects.get(user = user, product = product)
-            data.mark = mark
-            data.save()
-        else:
-            models.ProductReview.objects.create(
-                product = product,
-                user = user,
-                mark = mark
-            )
+       
+        try:
+            if models.ProductReview.objects.filter(user = user, product = product).first():
+                data =  models.ProductReview.objects.get(user = user, product = product)
+                data.mark = mark
+                data.save()
+            else:
+                models.ProductReview.objects.create(
+                    product = product,
+                    user = user,
+                    mark = mark
+                )
+        except:
+            return redirect('main:login')
     return render(request, 'product/detail.html', context)
 
 
