@@ -37,6 +37,8 @@
                 {% endfor %}
 				{%if cart.is_active == True%}
 				<a style="width: 100%; color: white; font-size: 15px;" class="col-12 btn btn-success" href="{%url 'main:order' cart.slug%}">Покупка</a>
+				{%elif cart.status == 1%}
+				<a style="width: 100%; color: white; font-size: 15px;" class="col-12 btn btn-success" href="{%url 'main:order' cart.slug%}">Покупка</a>
 				{%endif%}
 			</div>
 			</div>  
