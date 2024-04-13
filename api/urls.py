@@ -45,5 +45,7 @@ urlpatterns = [
     path('cart-detail/', views.cart_detail, name = 'cart_detail'),
     #cart-product
     path('cart-product/<str:slug>', views.cart_product, name = 'cart_product'), #cart_product yaratish va o'zgartirish uchun
-    path('cart-product-delete/<str:slug>', views.cart_product_delete, name = 'cart_product_delete')
+    path('cart-product-delete/<str:slug>', views.cart_product_delete, name = 'cart_product_delete'),
+    path('find-cart/<int:id>', views.find_cart, name = 'find_user'),
+    path('cart-status/<int:id>', views.cart_status, name = 'cart_status'),
 ]

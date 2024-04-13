@@ -552,3 +552,20 @@ def register(request):
                 'detail': 'username is occupied'
             }
         )
+    
+@api_view(["POST", "GET"])
+def find_cart(request, id):
+    cart_products = models.CartProduct.objects.filter(card_id = id)
+    cartproduct_serializer = serializers.CartProductSerializer(cart_products, many = True)
+    return Response(cartproduct_serializer.data)
+
+@api_view(["POST", "GET"])
+def cart_status(request, id):
+    cart = models.Cart.objects.get(id = id)
+    if cart.status == 1:
+        cart.status = 2
+        cart.save()
+        return Response({'detail': 'suceessfully changed'})
+    else:
+        return Response({'detail': 'cannot be changed'})
+

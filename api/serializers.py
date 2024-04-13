@@ -1,4 +1,4 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, SerializerMethodField
 from main.models import (Category, Product, ProductImage, WishList, ProductReview,
                         Cart, CartProduct, ProductIncome, Overall, Product_income_outcome,
                         ProductOut)
@@ -47,7 +47,7 @@ class CartProductSerializer(ModelSerializer):
     class Meta:
         depth = 1
         model = CartProduct
-        fields = '__all__'
+        fields = ['product']
     
 
 class ProductIncomeSerializer(ModelSerializer):
@@ -72,3 +72,13 @@ class Product_income_outcomeSerializer(ModelSerializer):
     class Meta:
         model = Product_income_outcome
         fields = '__all__'
+
+class CartSerializer(ModelSerializer):
+    total_price = SerializerMethodField()
+
+    class Meta:
+        model = Cart
+        fields = ['id', 'user', 'is_active', 'status', 'slug', 'total_price']
+
+    def get_total_price(self, obj):
+        return obj.total_price

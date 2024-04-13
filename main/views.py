@@ -24,7 +24,7 @@ def index(request):
         'categorys':categorys,
         'wished': models.WishList.objects.all()
     }
-    return render(request, 'index.html', context)
+    return render(request, 'main/index.html', context)
 
 def filtered(request, slug):
     products = models.Product.objects.filter(category__slug = slug)
@@ -33,7 +33,7 @@ def filtered(request, slug):
         'categorys': models.Category.objects.all(),
         'products': products
     }
-    return render(request, 'categ/filtered.html', context)
+    return render(request, 'main/categ/filtered.html', context)
 
 
 
@@ -76,7 +76,7 @@ def product_detail(request, slug ) :
                 )
         except:
             return redirect('main:login')
-    return render(request, 'product/detail.html', context)
+    return render(request, 'main/product/detail.html', context)
 
 
 def carts(request):
@@ -87,7 +87,7 @@ def carts(request):
         'in_active':in_active,
         'categorys': models.Category.objects.all(),
     }
-    return render(request, 'cart/carts.html', context)
+    return render(request, 'main/cart/carts.html', context)
 
 
 def cart_detail(request, slug):
@@ -98,7 +98,7 @@ def cart_detail(request, slug):
         'items':items,
         'categorys': models.Category.objects.all(),
     }
-    return render(request, 'cart/cart_detail.html', context)
+    return render(request, 'main/cart/cart_detail.html', context)
 
 
 def cart_detail_delete(request):
@@ -123,7 +123,7 @@ def login_user(request):
             return redirect('main:index')
         else:
             login_error = "Incorrect username or password. Please try again."
-    return render(request, 'login/login.html', {"login_error": login_error})
+    return render(request, 'main/login/login.html', {"login_error": login_error})
 
 
 @csrf_exempt
@@ -143,7 +143,7 @@ def regist(request):
             return redirect('main:index')
         else:
             error = f"the username {username} already exists"
-    return render(request, 'login/register.html', {'error': error})
+    return render(request, 'main/login/register.html', {'error': error})
 
 
 def logout_user(request):
@@ -183,7 +183,7 @@ def wishlist(request):
         'items': items,
         'categorys': models.Category.objects.all()
     }
-    return render(request, 'wish/list.html', context)
+    return render(request, 'main/wish/list.html', context)
 
 def add_wish(request,slug):
     if not request.user.is_authenticated:
@@ -223,7 +223,7 @@ def user_update(request):
                 update_session_auth_hash(request, user)
                 return redirect('main:index')
     
-    return render(request, 'user/update.html')
+    return render(request, 'main/user/update.html')
 
 def order_cart(request, slug):
     cart = models.Cart.objects.get(slug=slug)
@@ -278,4 +278,4 @@ def contact(request):
 
         # Redirect back to the previous page
         return redirect('main:index')
-    return render(request, 'contact.html')
+    return render(request, 'main/contact.html')
